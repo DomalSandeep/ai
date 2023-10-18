@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- You can add any head content here if needed -->
+  </head>
+  <body>
+    <h1>HELLO</h1>
+    <h2>DFS</h2>
+    <pre><code>
+<h4>
+def dfs(graph, node, visited=set()):
+    if node not in visited:
+        print(node)
+        visited.add(node)
+        for neighbor in graph.get(node, []):
+            dfs(graph, neighbor, visited)
+# Example usage
+graph = {
+    'A': ['B', 'C'],
+    'B': ['A', 'D', 'E'],
+    'C': ['A', 'F'],
+    'D': ['B'],
+    'E': ['B', 'F'],
+    'F': ['C', 'E']
+}
+
+print("DFS starting from node 'A':")
+dfs(graph, 'A')
+
+</h4>
+    </code></pre>
+    <h2>BFS</h2>
+        <pre><code>
+<h4>
+from collections import deque
+
+def bfs(graph, start):
+    visited = set()
+    queue = deque([start])
+    
+    while queue:
+        node = queue.popleft()
+        if node not in visited:
+            print(node, end=' ')
+            visited.add(node)
+            queue.extend(neighbour for neighbour in graph[node] if neighbour not in visited)
+
+# Example usage
+graph = {
+    'A': ['B', 'C'],
+    'B': ['A', 'D', 'E'],
+    'C': ['A', 'F'],
+    'D': ['B'],
+    'E': ['B', 'F'],
+    'F': ['C', 'E']
+}
+start_node = 'A'
+print("Breadth-First Search starting from node A:")
+bfs(graph, start_node)
+
+
+</h4>
+    </code></pre>
+    <h2>Tower of hanoi</h2>
+        <pre><code>
+<h4>
+def tower_of_hanoi(n, source, auxiliary, target):
+    if n == 1:
+        print(f"Move disk 1 from {source} to {target}")
+        return
+    tower_of_hanoi(n-1, source, target, auxiliary)
+    print(f"Move disk {n} from {source} to {target}")
+    tower_of_hanoi(n-1, auxiliary, source, target)
+
+# Example usage
+n = 3  # Number of disks
+tower_of_hanoi(n, 'A', 'B', 'C')
+
+
+
+</h4>
+    </code></pre>
+    <h2>Implementation of Missionaries and Cannibals Problem    </h2>
+    <pre><code>
+<h4>
+from collections import deque
+
+class State:
+    def __init__(self, missionaries, cannibals, boat):
+        self.missionaries = missionaries
+        self.cannibals = cannibals
+        self.boat = boat
+        self.parent = None
+
+def is_valid_state(state):
+    if state.missionaries < 0 or state.cannibals < 0:
+        return False
+    if state.missionaries > 3 or state.cannibals > 3:
+        return False
+    if (state.missionaries < state.cannibals) and state.missionaries > 0:
+        return False
+    if (3 - state.missionaries) < (3 - state.cannibals) and (3 - state.missionaries) > 0:
+        return False
+    return True
+
+def generate_moves(state):
+    moves = []
+    for m in range(3):
+        for c in range(3):
+            if 1 <= (m + c) <= 2:
+                if state.boat == 1:
+                    new_state = State(state.missionaries - m, state.cannibals - c, 0)
+                else:
+                    new_state = State(state.missionaries + m, state.cannibals + c, 1)
+                if is_valid_state(new_state):
+                    moves.append(new_state)
+    return moves
+
+def bfs():
+    start_state = State(3, 3, 1)
+    queue = deque([start_state])
+    visited = set([start_state])
+
+    while queue:
+        current_state = queue.popleft()
+
+        if current_state.missionaries == 0 and current_state.cannibals == 0:
+            return current_state
+
+        possible_moves = generate_moves(current_state)
+        for move in possible_moves:
+            if move not in visited:
+                move.parent = current_state
+                queue.append(move)
+                visited.add(move)
+
+    return None
+
+def print_solution(solution):
+    if solution is None:
+        print("No solution found.")
+    else:
+        path = []
+        current = solution
+        while current is not None:
+            path.insert(0, current)
+            current = current.parent
+
+        for i, state in enumerate(path):
+            print(f"Step {i}: Missionaries = {state.missionaries}, Cannibals = {state.cannibals}, Boat = {'Left' if state.boat == 0 else 'Right'}")
+
+if __name__ == "__main__":
+    final_state = bfs()
+    print_solution(final_state)
+</h4>
+</code></pre>
+<h2>Implementation of Tic tac toe problem 
+
+</h2>
+<pre><code>
+<h4>
+def print_board(board):
+    for row in board:
+        print(" | ".join(row))
+        print("-" * 9)
+
+def check_winner(board, player):
+    for row in board:
+        if all(cell == player for cell in row):
+            return True
+
+    for col in range(3):
+        if all(row[col] == player for row in board):
+            return True
+
+    if all(board[i][i] == player for i in range(3)) or all(board[i][2 - i] == player for i in range(3)):
+        return True
+
+    return False
+
+def is_full(board):
+    return all(cell != ' ' for row in board for cell in row)
+
+def tic_tac_toe():
+    board = [[' ' for _ in range(3)] for _ in range(3)]
+    current_player = 'X'
+
+    while True:
+        print_board(board)
+        print(f"Player {current_player}'s turn.")
+        row, col = map(int, input("Enter row and column (e.g., 1 2): ").split())
+
+        if board[row - 1][col - 1] == ' ':
+            board[row - 1][col - 1] = current_player
+        else:
+            print("Cell already occupied. Try again.")
+            continue
+
+        if check_winner(board, current_player):
+            print_board(board)
+            print(f"Player {current_player} wins!")
+            break
+
+        if is_full(board):
+            print_board(board)
+            print("It's a draw!")
+            break
+
+        current_player = 'O' if current_player == 'X' else 'X'
+
+if __name__ == "__main__":
+    tic_tac_toe()
+
+</h4>
+</code></pre>
+<h2>Program for water jug problem.</h2>
+<pre><code>
+<h4>
+from collections import deque
+
+def water_jug_problem(capacity_jug1, capacity_jug2, target):
+    def is_valid_state(state):
+        jug1, jug2 = state
+        return 0 <= jug1 <= capacity_jug1 and 0 <= jug2 <= capacity_jug2
+
+    def is_goal_state(state):
+        return state[0] == target or state[1] == target
+
+    def generate_next_states(state):
+        jug1, jug2 = state
+        next_states = set()
+
+        # Fill jug1
+        next_states.add((capacity_jug1, jug2))
+
+        # Fill jug2
+        next_states.add((jug1, capacity_jug2))
+
+        # Empty jug1
+        next_states.add((0, jug2))
+
+        # Empty jug2
+        next_states.add((jug1, 0))
+
+        # Pour from jug1 to jug2
+        transfer_amount = min(jug1, capacity_jug2 - jug2)
+        next_states.add((jug1 - transfer_amount, jug2 + transfer_amount))
+
+        # Pour from jug2 to jug1
+        transfer_amount = min(jug2, capacity_jug1 - jug1)
+        next_states.add((jug1 + transfer_amount, jug2 - transfer_amount))
+
+        return {state for state in next_states if is_valid_state(state)}
+
+    start_state = (0, 0)
+    visited = set()
+    queue = deque([(start_state, [])])
+
+    while queue:
+        current_state, path = queue.popleft()
+        if is_goal_state(current_state):
+            return path
+
+        visited.add(current_state)
+
+        for next_state in generate_next_states(current_state):
+            if next_state not in visited:
+                new_path = path + [next_state]
+                queue.append((next_state, new_path))
+
+    return None
+
+if __name__ == "__main__":
+    jug1_capacity = 4
+    jug2_capacity = 3
+    target_amount = 2
+
+    solution = water_jug_problem(jug1_capacity, jug2_capacity, target_amount)
+
+    if solution:
+        print("Solution found:")
+        for step, state in enumerate(solution):
+            print(f"Step {step + 1}: Jug 1 = {state[0]}, Jug 2 = {state[1]}")
+    else:
+        print("No solution found.")
+
+
+</h4>
+</code></pre>
+<h2>prolog</h2>
+<pre><code>
+<h4>
+from collections import deque
+
+def bfs(graph, start):
+visited = set()
+queue = deque([start])
+
+while queue:
+node = queue.popleft()
+if node not in visited:
+    print(node, end=' ')
+    visited.add(node)
+    queue.extend(neighbour for neighbour in graph[node] if neighbour not in visited)
+
+# Example usage
+graph = {
+'A': ['B', 'C'],
+'B': ['A', 'D', 'E'],
+'C': ['A', 'F'],
+'D': ['B'],
+'E': ['B', 'F'],
+'F': ['C', 'E']
+}
+start_node = 'A'
+print("Breadth-First Search starting from node A:")
+bfs(graph, start_node)
+
+
+</h4>
+</code></pre>
+
+<h2>Depth limited search </h2>
+<pre><code>
+<h4>
+graph = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['F', 'G'],
+    'D': [],
+    'E': [],
+    'F': [],
+    'G': []
+}
+
+
+def DLS(start, goal, path, level, maxD):
+    print('\nCurrent level-->', level)
+    path.append(start)
+
+    if start == goal:
+        print("Goal test Successful")
+        return path
+
+    print('Goal node testing failed')
+
+    if level == maxD:
+        return False
+
+    print('\nExpanding the current node', start)
+    for child in graph[start]:
+        if DLS(child, goal, path, level + 1, maxD):
+            return path
+
+    path.pop()
+    return False
+
+
+start = 'A'
+goal = input('Enter the Goal Node:')
+
+maxD = int(input("Enter the maximum depth limit:"))
+print()
+path = list()
+res = DLS(start, goal, path, 0, maxD)
+
+if res:
+    print("Path to goal node available")
+    print("Path", path)
+else:
+    print("No Path available for the goal node in the given depth limit")
+
+</h4>
+</code></pre>
+<h2> Implement Iterative-Deepening DepthFirst Search
+</h2>
+<pre><code>
+<h4>
+graph = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['F', 'G'],
+    'D': [],
+    'E': [],
+    'F': [],
+    'G': []
+}
+
+path = list()
+
+def IDDFS(currentNode, destination, graph, maxDepth, curList):
+    curList.append(currentNode)
+    if currentNode == destination:
+        return True
+    if maxDepth <= 0:
+        path.append(curList)
+        return False
+    for node in graph[currentNode]:
+        if IDDFS(node, destination, graph, maxDepth - 1, curList):
+            return True
+        else:
+            curList.pop()
+    return False
+
+def iterativeDDFS(currentNode, destination, graph, maxDepth):
+    for i in range(maxDepth):
+        curList = list()
+        if IDDFS(currentNode, destination, graph, i, curList):
+            return True
+    return False
+
+if not iterativeDDFS('A', 'E', graph, 3):
+    print("Path is not available")
+else:
+    print("Path exists")
+    print(path.pop())
+
+</h4>
+</code></pre>
+<h2>Implement Bidirectional search</h2>
+<pre><code>
+<h4>
+from collections import deque
+
+
+class Node:
+    def __init__(self, val, neighbors=None):
+        if neighbors is None:
+            neighbors = []
+        self.val = val
+        self.neighbors = neighbors
+        self.visited_right = False
+        self.visited_left = False
+        self.parent_right = None
+        self.parent_left = None
+
+
+def extract_path(node):
+    node_copy = node
+    path = []
+    while node:
+        path.append(node.val)
+        node = node.parent_right
+    path.reverse()
+    del path[-1]
+    while node_copy:
+        path.append(node_copy.val)
+        node_copy = node_copy.parent_left
+    return path
+
+
+def BIDI(s, t):
+    q = deque([])
+    q.append(s)
+    q.append(t)
+    s.visited_right = True
+    t.visited_left = True
+    while len(q) > 0:
+        n = q.pop()
+        if n.visited_left and n.visited_right:
+            return extract_path(n)
+        for node in n.neighbors:
+            if n.visited_left == True and not node.visited_left:
+                node.parent_left = n
+                node.visited_left = True
+                q.append(node)
+            if n.visited_right == True and not node.visited_right:
+                node.parent_right = n
+                node.visited_right = True
+                q.append(node)
+    return False
+
+
+n0 = Node('A')
+n1 = Node('B')
+n2 = Node('C')
+n3 = Node('D')
+n4 = Node('E')
+n5 = Node('F')
+n6 = Node('G')
+
+n0.neighbors = []
+n1.neighbors = [n0]
+n2.neighbors = [n0]
+n3.neighbors = [n1]
+n4.neighbors = [n1]
+n5.neighbors = [n2]
+n6.neighbors = [n2]
+
+print(BIDI(n4, n6))
+
+
+
+</h4>
+</code></pre>
+<h2>Implement Uniform-Cost Search Algorithm</h2>
+<pre><code>
+<h4>
+graph = [['S', 'A', 6],
+         ['S', 'B', 5],
+         ['S', 'C', 10],
+         ['A', 'E', 6],
+         ['B', 'E', 6],
+         ['B', 'D', 7],
+         ['C', 'D', 6],
+         ['E', 'F', 6],
+         ['D', 'F', 6],
+         ['F', 'G', 1]]
+
+temp = []
+temp1 = []
+
+for i in graph:
+    temp.append(i[0])
+    temp1.append(i[1])
+
+nodes = set(temp).union(set(temp1))
+
+
+def UCS(graph, costs, open, closed, cur_node):
+    if cur_node in open:
+        open.remove(cur_node)
+    closed.add(cur_node)
+    for i in graph:
+        if i[0] == cur_node and costs[i[0]] + i[2] < costs[i[1]]:
+            open.add(i[1])
+            costs[i[1]] = costs[i[0]] + i[2]
+            path[i[1]] = path[i[0]] + ' -> ' + i[1]
+    costs[cur_node] = 999999
+    small = min(costs, key=costs.get)
+    if small not in closed:
+        UCS(graph, costs, open, closed, small)
+
+
+costs = dict()
+temp_cost = dict()
+path = dict()
+
+for i in nodes:
+    costs[i] = 999999
+    path[i] = ' '
+
+open = set()
+closed = set()
+
+start_node = input("Enter the Start State: ")
+open.add(start_node)
+path[start_node] = start_node
+costs[start_node] = 0
+UCS(graph, costs, open, closed, start_node)
+
+goal_node = input("Enter the Goal State: ")
+print("Path with least cost is: ", path[goal_node])
+
+</h4>
+</code></pre>
+
+  </body>
+</html>
